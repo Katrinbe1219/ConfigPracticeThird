@@ -11,8 +11,19 @@ class Assembler:
         self.config = self._set_up_args()
         self.test_mode = False
         self.text_ = None
+
+        self.mapping = {
+            'const': self.down_const,
+            'read': self.read_,
+            'write':self.write_,
+            'gt': self.qt_
+        }
+        self.machine_code = None
+        self.command_count = None
+
         
         self.start_executing(self.config)
+        
 
 
     
@@ -67,7 +78,33 @@ class Assembler:
             
         return Path.cwd()/path
         
+    def translate(self):
+        program = self.text_
+        command_count   = 0
+        machine_code = b''
 
+        for cmd in program:
+            mnemonic = cmd['op']
+            args_ = cmd['args']
+
+            if mnemonic not in self.mapping:
+                return "Команды не существует"
+            
+
+            if cmd['op'] == "const":
+                machine_code += self.mapping[mnemonic](args_[0]['A'], args_[1]['B'], args_[2]['C'])
+            elif cmd['op'] == "read":
+                machine_code += self.mapping[mnemonic](args_[0]['A'], args_[1]['B'], args_[2]['C'], args_[3]['D'])
+            elif cmd['op'] == "write":
+                machine_code += self.mapping[mnemonic](args_[0]['A'], args_[1]['B'], args_[2]['C'], args_[3]['D'])
+            elif cmd['op'] == "qt":
+                machine_code += self.mapping[mnemonic](args_[0]['A'], args_[1]['B'], args_[2]['C'], args_[3]['D'], args_[4]['E'])
+
+            command_count +=1
+        
+        self.machine_code =machine_code
+        self.command_count = command_count
+        return ""
         
 
     
@@ -80,8 +117,24 @@ class Assembler:
         
         
         if self.test_mode:
-            self.execute_code()
+            translation = self.translate()
+            if translation != "":
+                sys.exit(translation)
 
+            self.assemble_to_file(args['binFile'])
+
+    def assemble_to_file(self, path):
+
+        with open(path, 'wb') as file:
+            file.write(self.machine_code)
+
+        print("Ассемблировано комамнд: ", self.command_count)
+        print("Размер машинного кода: ", len(self.machine_code))
+        print("Результат записанный в файле: ", self.machine_code)
+
+
+
+    
     def execute_code(self, ):
         program = self.text_
         
@@ -144,9 +197,7 @@ class Assembler:
         cmd |=(c & mask_c) << 25
 
         
-        result = cmd.to_bytes(7, "little") # b'\x86d\x00H -> здесь 100 была как d, \x00 - 0, H - 72 и поэтому другой вывод
-        spec = ', '.join(f"0x{byte:02x}" for byte in result)
-        return spec
+        return cmd.to_bytes(7, "little")
     
 
     def read_(self,a,b,c,d):
@@ -155,9 +206,8 @@ class Assembler:
         cmd |= (c & self.mask(27)) << 33
         cmd |= (d & self.mask(14)) << 60
 
-        result = cmd.to_bytes(10, "little")
-        spec = ', '.join(f"0x{byte:02x}" for byte in result)
-        return spec
+        
+        return cmd.to_bytes(10, "little")
     
     def write_(self,a,b,c,d):
         cmd = a & self.mask(6)
@@ -165,9 +215,7 @@ class Assembler:
         cmd |= (c & self.mask(14)) << 33
         cmd |= (d & self.mask(27)) << 47
 
-        result = cmd.to_bytes(10, "little")
-        spec = ', '.join(f"0x{byte:02x}" for byte in result)
-        return spec
+        return cmd.to_bytes(10, "little")
     
 
     def  qt_(self,a,b,c,d,e):
@@ -177,9 +225,7 @@ class Assembler:
         cmd |= (d & self.mask(27)) << 47
         cmd |= (e & self.mask(27)) << 74
 
-        result = cmd.to_bytes(13, "little")
-        spec = ', '.join(f"0x{byte:02x}" for byte in result)
-        return spec
+        return cmd.to_bytes(13, "little")
 
 
 
