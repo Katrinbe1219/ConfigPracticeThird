@@ -1,0 +1,28 @@
+program:
+  - op: const
+    args: 
+      - A: 6
+      - B: 402
+      - C: 932
+
+  - op: read
+    args: 
+       - A: 16
+       - B: 497
+       - C: 492
+       - D: 684
+
+  - op: write
+    args: 
+    - A: 54
+    - B: 954
+    - C: 745
+    - D: 995
+
+  - op: gt
+    args: 
+      - A: 44
+      - B: 1020
+      - C: 443
+      - D: 997
+      - E: 1021
