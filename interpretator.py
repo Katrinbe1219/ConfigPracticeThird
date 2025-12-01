@@ -42,12 +42,12 @@ class Assembler:
                  epilog=""
             )
 
-          #   parser.add_argument(
-          #        '--dampFile',
-          #        required=True,
-          #        type=str,
-          #        help="Путь к файлу, куда будет сохранен дамп памяти после выполнения программы."
-          #   )
+            parser.add_argument(
+                 '--dampFile',
+                 required=True,
+                 type=str,
+                 help="Путь к файлу, куда будет сохранен дамп памяти после выполнения программы."
+            )
 
             parser.add_argument(
                  '--binFile',
@@ -56,12 +56,13 @@ class Assembler:
                  help="Путь к двоичному файлу-результату."
             )
 
-          #   parser.add_argument(
-          #        '--d',
-          #        required=True,
-          #        help = "Диапазон адресов памяти для вывода дампа.",
-          #        action=int
-          #   )
+            parser.add_argument(
+                 '--d',
+                 required=True,
+                 nargs=2,
+                 help = "Диапазон адресов памяти для вывода дампа.",
+                 type=int
+            )
 
             return vars(parser.parse_args())
     
@@ -178,7 +179,7 @@ class Assembler:
 
         if op == "const":
               b,c = inst[2], inst[3]
-              self.write_bits(c,b,19)
+              self.write_bits(c*8,b,19)
 
      #    elif op == "read":
      #        b,c,d = inst[2], inst[3], inst[4]
@@ -196,13 +197,13 @@ class Assembler:
         
         elif op == "qt":
             b,c,d,e = inst[2], inst[3], inst[4], inst[5]
-            op1 = self.read_bits(b,64)
-            op2 = self.read_bits(e,64)
+            op1 = self.read_bits(b*8,64)
+            op2 = self.read_bits(e*8,64)
+            result = 1 if op1 > op2 else  0
+            final =( d + c) * 8
 
-            adress = self.read_bits(d,27)
-            final = adress + c
+            self.write_bits(final, result, 64)
 
-            self.write_bits(final, op1+op2, 64)
         elif op == "read":
           b,c,d = inst[2], inst[3], inst[4]
           final_address = (c + d  )   *8  # просто складываем адрес и смещение
@@ -218,7 +219,14 @@ class Assembler:
         else:
              self.running = False
 
-        
+    def make_damp(self):
+         start, end = self.config['d']
+         with open(self.config['dampFile'], 'w') as file:
+              file.write('Address;Value\n')
+              for add in range(start, end):
+                   value = self.read_bits(add*8, 8) # читаем байт
+                   file.write(f"{add};{value}\n")
+
          
     def run(self):
         
@@ -241,6 +249,7 @@ class Assembler:
           self.execute_instruction(decode_instr)
           self.command_count+=1
           pc += insrt_bits
+     self.make_damp()
         
 
 def test_for_original(asm):
@@ -276,14 +285,25 @@ def verify_array_copy(asm, source_start, dest_start, length, element_size: int =
         )
     print(f"Все {length} элементов успешно скопированы из {source_start} в {dest_start}.")
 
+def test_qt_gt(asm, expected_result, result_address):
+
+    result = asm.read_bits(result_address * 8, 64)  # *8, т.к. read_bits работает с битами
+
+
+    assert result == expected_result, (
+        f"Ошибка: ожидаемый результат {expected_result}, "
+        f"получено {result}"
+    )
+
+    print(f"Команда 'qt' выполнена корректно: {result} == {expected_result}")
 
 if __name__ == "__main__":
      inter = Assembler()
-     test_for_original(inter)
+     #test_for_original(inter)
      source_start = 1000
      dest_start = 2000
      array_length = 5  # количество элементов
-
+     test_qt_gt(inter,1, 1016)
      #verify_array_copy(inter, source_start, dest_start, array_length)
 
      

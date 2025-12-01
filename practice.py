@@ -16,7 +16,7 @@ class Assembler:
             'const': self.down_const,
             'read': self.read_,
             'write':self.write_,
-            'gt': self.qt_
+            'qt': self.qt_
         }
         self.machine_code = None
         self.command_count = None
@@ -86,11 +86,10 @@ class Assembler:
         for cmd in program:
             mnemonic = cmd['op']
             args_ = cmd['args']
-
             if mnemonic not in self.mapping:
                 return "Команды не существует"
             
-
+            
             if cmd['op'] == "const":
                 machine_code += self.mapping[mnemonic](args_[0]['A'], args_[1]['B'], args_[2]['C'])
             elif cmd['op'] == "read":
@@ -108,10 +107,12 @@ class Assembler:
         
 
     
-    def start_executing(self, args: dict[str, Any]):  
+    def start_executing(self, args: dict[str, Any]): 
+        
         checking = self.checking_args(args)
 
         if checking != "":
+            
             sys.exit(checking)
 
         
