@@ -96,8 +96,10 @@ class Assembler:
                 machine_code += self.mapping[mnemonic](args_[0]['A'], args_[1]['B'], args_[2]['C'], args_[3]['D'])
             elif cmd['op'] == "write":
                 machine_code += self.mapping[mnemonic](args_[0]['A'], args_[1]['B'], args_[2]['C'], args_[3]['D'])
-            elif cmd['op'] == "qt":
+            elif cmd['op'] == "qt": 
                 machine_code += self.mapping[mnemonic](args_[0]['A'], args_[1]['B'], args_[2]['C'], args_[3]['D'], args_[4]['E'])
+                
+
 
             command_count +=1
         

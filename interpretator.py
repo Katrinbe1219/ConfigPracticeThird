@@ -303,7 +303,7 @@ if __name__ == "__main__":
      source_start = 1000
      dest_start = 2000
      array_length = 5  # количество элементов
-     test_qt_gt(inter,1, 1016)
+     #test_qt_gt(inter,1, 1016)
      #verify_array_copy(inter, source_start, dest_start, array_length)
 
      
