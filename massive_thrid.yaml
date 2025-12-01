@@ -1,0 +1,103 @@
+program:
+  # исходный массив: 5 чисел
+  - op: const
+    args:
+      - A: 6
+      - B: 10
+      - C: 1000
+
+  - op: const
+    args:
+      - A: 6
+      - B: 20
+      - C: 1064
+
+  - op: const
+    args:
+      - A: 6
+      - B: 30
+      - C: 1128
+
+  - op: const
+    args:
+      - A: 6
+      - B: 40
+      - C: 1192
+
+  - op: const
+    args:
+      - A: 6
+      - B: 50
+      - C: 1256
+
+  # копируем элементы по одному
+  - op: read
+    args:
+      - A: 16
+      - B: 6000
+      - C: 1000
+      - D: 0
+
+  - op: write
+    args:
+      - A: 54
+      - B: 2000
+      - C: 0
+      - D: 6000
+
+  - op: read
+    args:
+      - A: 16
+      - B: 5001
+      - C: 1064
+      - D: 0
+
+  - op: write
+    args:
+      - A: 54
+      - B: 2064
+      - C: 0
+      - D: 5001
+
+  - op: read
+    args:
+      - A: 16
+      - B: 5002
+      - C: 1128
+      - D: 0
+
+  - op: write
+    args:
+      - A: 54
+      - B: 2128
+      - C: 0
+      - D: 5002
+
+  - op: read
+    args:
+      - A: 16
+      - B: 5003
+      - C: 1192
+      - D: 0
+
+  - op: write
+    args:
+      - A: 54
+      - B: 2192
+      - C: 0
+      - D: 5003
+
+  - op: read
+    args:
+      - A: 16
+      - B: 5004
+      - C: 1256
+      - D: 0
+
+  - op: write
+    args:
+      - A: 54
+      - B: 2256
+      - C: 0
+      - D: 5004
+
